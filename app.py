@@ -67,6 +67,26 @@ def render_dashboard():
     st.caption(f"Welcome back, **{st.session_state.full_name}** • Role: **{st.session_state.role}**")
     st.divider()
 
+    # ⚡ QUICK ACTIONS MOVED TO TOP
+    with st.container(border=True):
+        st.markdown("### ⚡ Quick Actions")
+        q1, q2, q3, q4 = st.columns(4)
+        if q1.button("📁 New Case", use_container_width=True, type="primary"):
+            st.session_state.current_page = "Cases"
+            st.rerun()
+        if q2.button("📤 Upload Evidence", use_container_width=True):
+            st.session_state.current_page = "Evidence"
+            st.rerun()
+        if q3.button("📊 View Analytics", use_container_width=True):
+            st.session_state.current_page = "Analytics"
+            st.rerun()
+        if q4.button("📄 Generate Report", use_container_width=True):
+            st.session_state.current_page = "Reports"
+            st.rerun()
+
+    st.write("")
+
+    # KPI METRICS
     total_cases = fetch_one("SELECT COUNT(*) FROM cases")[0]
     active_cases = fetch_one("SELECT COUNT(*) FROM cases WHERE status IN ('New', 'Active')")[0]
     closed_cases = fetch_one("SELECT COUNT(*) FROM cases WHERE status = 'Closed'")[0]
@@ -122,23 +142,6 @@ def render_dashboard():
                     st.divider()
             else:
                 st.info("No activity yet.")
-
-    st.write("")
-    with st.container(border=True):
-        st.markdown("### ⚡ Quick Actions")
-        q1, q2, q3, q4 = st.columns(4)
-        if q1.button("📁 New Case", use_container_width=True, type="primary"):
-            st.session_state.current_page = "Cases"
-            st.rerun()
-        if q2.button("📤 Upload Evidence", use_container_width=True):
-            st.session_state.current_page = "Evidence"
-            st.rerun()
-        if q3.button("📊 View Analytics", use_container_width=True):
-            st.session_state.current_page = "Analytics"
-            st.rerun()
-        if q4.button("📄 Generate Report", use_container_width=True):
-            st.session_state.current_page = "Reports"
-            st.rerun()
 
 
 # ==================== CASES PAGE ====================
@@ -566,7 +569,7 @@ def render_reports():
         st.info("No data available for this report.")
 
 
-# ==================== ANALYTICS PAGE ====================
+# ==================== ANALYTICS PAGE (5 CHARTS!) ====================
 def render_analytics():
     st.markdown("# 📊 Analytics Dashboard")
     st.caption("Visual insights from real database data")
@@ -725,7 +728,7 @@ def render_audit_logs():
         st.info("No audit logs yet.")
 
 
-# ==================== SETTINGS PAGE ====================
+# ==================== SETTINGS PAGE (5 TABS!) ====================
 def render_settings():
     st.markdown("# ⚙️ Account Settings")
     st.caption("Manage your profile, security, and preferences")
@@ -786,7 +789,6 @@ def render_settings():
                     elif '@' not in new_email:
                         st.error("⚠️ Please enter a valid email.")
                     else:
-                        # Check if new username/email conflicts with other users
                         if new_username != user['username']:
                             existing = fetch_one(
                                 "SELECT id FROM users WHERE username = ? AND id != ?",
@@ -805,7 +807,6 @@ def render_settings():
                                 st.error("❌ Email already registered by another user.")
                                 st.stop()
                         
-                        # Update database
                         execute_query("""
                             UPDATE users 
                             SET first_name = ?, last_name = ?, username = ?, email = ?
@@ -815,7 +816,6 @@ def render_settings():
                         log_audit(st.session_state.username, "Profile Updated",
                                   f"Profile details changed")
                         
-                        # Update session state
                         st.session_state.full_name = f"{new_first} {new_last}"
                         
                         if new_username != user['username']:
@@ -827,7 +827,7 @@ def render_settings():
                             st.balloons()
                             st.rerun()
 
-    # ---------- TAB 3: SECURITY (Password Change) ----------
+    # ---------- TAB 3: SECURITY ----------
     with tab3:
         with st.container(border=True):
             st.markdown("### 🔐 Change Password")
@@ -995,6 +995,7 @@ def render_settings():
             
             Built with ❤️ using Python & Streamlit
             """)
+
 
 # ==================== MAIN APP ====================
 def main():
