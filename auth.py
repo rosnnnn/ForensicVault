@@ -1,5 +1,5 @@
 """
-ForensicVault - Authentication Module
+ForensicVault - Authentication & Public Landing Module
 """
 import streamlit as st
 from datetime import datetime
@@ -101,61 +101,63 @@ def logout():
 
 
 def render_login_page():
-    """Beautiful centered login page."""
-    # Add top spacing
-    st.write("")
+    """Public Portal: Homepage + Login + Registration"""
     st.write("")
     
-    col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2, col3 = st.columns([1, 2.5, 1])
 
     with col2:
-        # Big Logo & Title
-        st.markdown("<h1 style='text-align: center; font-size: 60px;'>🛡️</h1>", unsafe_allow_html=True)
-        st.markdown("<h1 style='text-align: center; margin-top: -20px;'>ForensicVault</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: gray;'>Secure Digital Evidence & Case Management System</p>", unsafe_allow_html=True)
+        # App Branding Header
+        st.markdown("<h1 style='text-align: center; font-size: 55px;'>🛡️ ForensicVault</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: gray; font-size: 16px;'>Secure Digital Evidence & Case Management System</p>", unsafe_allow_html=True)
         st.write("")
 
-        # Security Features Banner
-        with st.container(border=True):
-            fc1, fc2, fc3 = st.columns(3)
-            fc1.markdown("<div style='text-align:center;'>🔒<br><b>AES-256</b><br><small>Encryption</small></div>", unsafe_allow_html=True)
-            fc2.markdown("<div style='text-align:center;'>✅<br><b>SHA-256</b><br><small>Hash Verify</small></div>", unsafe_allow_html=True)
-            fc3.markdown("<div style='text-align:center;'>🛡️<br><b>RBAC</b><br><small>Access Control</small></div>", unsafe_allow_html=True)
+        # 3 Public Tabs
+        tab_home, tab_login, tab_register = st.tabs(["🏠 **Overview**", "🔑 **Login**", "📝 **Register**"])
 
-        st.write("")
+        # ==================== TAB 1: HOMEPAGE / OVERVIEW ====================
+        with tab_home:
+            st.markdown("### Welcome to ForensicVault")
+            st.markdown("""
+            **ForensicVault** is an enterprise-grade digital evidence and case management prototype 
+            designed to streamline cybercrime investigations while maintaining strict evidentiary integrity.
+            """)
+            
+            st.divider()
 
-        # Tabs
-        tab1, tab2 = st.tabs(["🔑  **Login**", "📝  **Register**"])
+            st.markdown("#### ✨ Key Features")
+            f1, f2 = st.columns(2)
+            with f1:
+                st.markdown("**📁 Case Management**\n\nRegister, track, filter, and assign cases.")
+                st.markdown("**🔐 SHA-256 Hashing**\n\nAutomatic file digest generation & verification.")
+            with f2:
+                st.markdown("**⛓️ Chain of Custody**\n\nImmutable logs tracking every evidence interaction.")
+                st.markdown("**📊 Visual Analytics**\n\nInteractive Plotly charts and report generation.")
 
-        with tab1:
+            st.divider()
+
+            st.markdown("#### 🛠️ Technology Stack")
+            c1, c2, c3, c4 = st.columns(4)
+            c1.markdown("**Python 3**\n\nCore Logic")
+            c2.markdown("**Streamlit**\n\nUser Interface")
+            c3.markdown("**SQLite 3**\n\nDatabase")
+            c4.markdown("**hashlib**\n\nCryptography")
+
+            st.info("👈 Switch to the **Login** tab to access the system.")
+
+        # ==================== TAB 2: LOGIN ====================
+        with tab_login:
             with st.form("login_form", clear_on_submit=False):
-                st.markdown("### Welcome Back 👋")
-                st.caption("Enter your credentials below")
+                st.markdown("### User Authentication")
+                st.caption("Enter your credentials to access the vault")
                 st.write("")
 
-                username = st.text_input(
-                    "👤 Username / Badge ID",
-                    placeholder="Enter your username",
-                    key="login_username"
-                )
-                password = st.text_input(
-                    "🔒 Password",
-                    type="password",
-                    placeholder="Enter your password",
-                    key="login_password"
-                )
-                role = st.selectbox(
-                    "🎖️ Select Role",
-                    ["Administrator", "Investigator", "Forensic Analyst"],
-                    key="login_role"
-                )
+                username = st.text_input("👤 Username / Badge ID", placeholder="e.g., anact")
+                password = st.text_input("🔒 Password", type="password", placeholder="Enter password")
+                role = st.selectbox("🎖️ Select Role", ["Administrator", "Investigator", "Forensic Analyst"])
 
                 st.write("")
-                submitted = st.form_submit_button(
-                    "🚀 Login Securely",
-                    use_container_width=True,
-                    type="primary"
-                )
+                submitted = st.form_submit_button("🚀 Authenticate & Login", use_container_width=True, type="primary")
 
                 if submitted:
                     success, msg = login_user(username, password, role)
@@ -166,7 +168,21 @@ def render_login_page():
                     else:
                         st.error(msg)
 
-        with tab2:
+            # Demo Credentials Expander
+            with st.expander("💡 View Demo Credentials"):
+                st.info("""
+                **🔑 Administrator**  
+                Username: `anact` | Password: `Anact@245`
+
+                **🕵️ Investigator**  
+                Username: `anactt` | Password: `Anact@245`
+
+                **🔬 Forensic Analyst**  
+                Username: `anacttt` | Password: `Anact@245`
+                """)
+
+        # ==================== TAB 3: REGISTER ====================
+        with tab_register:
             with st.form("register_form", clear_on_submit=True):
                 st.markdown("### Create New Account 🚀")
                 st.caption("Register for authorized system access")
@@ -176,13 +192,10 @@ def render_login_page():
                 fn = rc1.text_input("First Name *", placeholder="John")
                 ln = rc2.text_input("Last Name *", placeholder="Doe")
 
-                un = st.text_input("Username / Badge ID *", placeholder="Choose a unique username")
+                un = st.text_input("Username / Badge ID *", placeholder="Choose unique username")
                 em = st.text_input("Email Address *", placeholder="officer@agency.gov")
 
-                role_reg = st.selectbox(
-                    "Select Role *",
-                    ["Investigator", "Forensic Analyst", "Administrator"]
-                )
+                role_reg = st.selectbox("Select Role *", ["Investigator", "Forensic Analyst", "Administrator"])
 
                 rc3, rc4 = st.columns(2)
                 pw = rc3.text_input("Password *", type="password", placeholder="Min 8 characters")
@@ -191,11 +204,7 @@ def render_login_page():
                 agree = st.checkbox("I agree to the security terms & privacy policy")
 
                 st.write("")
-                reg_submit = st.form_submit_button(
-                    "✅ Create Account",
-                    use_container_width=True,
-                    type="primary"
-                )
+                reg_submit = st.form_submit_button("✅ Create Account", use_container_width=True, type="primary")
 
                 if reg_submit:
                     if not agree:
