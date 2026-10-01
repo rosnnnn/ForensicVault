@@ -268,8 +268,7 @@ def render_login_page():
                 </div>
             </div>
             """, unsafe_allow_html=True)
-
-            st.info("👈 Switch to the **Login** tab above to access the secure vault.")
+            
 
         # ==================== TAB 2: LOGIN ====================
         with tab_login:
